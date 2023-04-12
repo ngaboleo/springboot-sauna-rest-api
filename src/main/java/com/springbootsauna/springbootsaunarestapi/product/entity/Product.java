@@ -21,7 +21,7 @@ public class Product {
     private UUID id;
     private String productName;
     private double priceOfProduct;
-    @OneToMany(mappedBy = "product")
+    @ManyToMany(mappedBy = "products")
     private List<Appointment> appointments;
     @ManyToOne
     @JoinColumn(name = "product_category_id")

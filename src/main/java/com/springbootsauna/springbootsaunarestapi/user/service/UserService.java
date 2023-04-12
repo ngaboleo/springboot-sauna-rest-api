@@ -22,23 +22,8 @@ public class UserService implements IUserService{
     public ResponseObject createUser(UserDto userDto) {
         try {
             User user = new User();
-            System.out.println(userDto.getGender());
-            System.out.println(userDto.getRole());
-//            System.out.println(userDto.getFirstName());
-//            System.out.println(userDto.getPhoneNumber());
-//            System.out.println(userDto.getNationalId());
             BeanUtils.copyProperties(userDto, user);
-            user.setEGender(EGender.valueOf(userDto.getGender()));
-            user.setERole(ERole.valueOf(userDto.getRole()));
-//            System.out.println(user.getEGender());
-//            System.out.println(user.getERole());
-//            System.out.println(user.getFirstName());
-            User user1 = iUserRepository.save(user);
-            UserDto userDto1 = new UserDto();
-            BeanUtils.copyProperties(user1, userDto1);
-            userDto1.setGender(user1.getEGender().name());
-            userDto1.setRole(user1.getERole().name());
-            return new ResponseObject(userDto1);
+            return new ResponseObject(iUserRepository.save(user));
         }catch (Exception exception){
             return new ResponseObject(exception);
         }

@@ -1,11 +1,13 @@
 package com.springbootsauna.springbootsaunarestapi.util;
 
+import lombok.Data;
+
+@Data
 public class ResponseObject {
 
     private Boolean status;
     private Object result;
     private String message;
-    private Long count;
 
     public ResponseObject(Object object){
         this.status = true;

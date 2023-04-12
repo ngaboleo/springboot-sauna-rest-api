@@ -5,5 +5,9 @@ public enum ERole {
 
     RECEPTIONIST,
 
-    MASSEUR
+    MASSEUR,
+
+    MANAGER,
+
+    OWNER
 }

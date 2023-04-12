@@ -1,7 +1,7 @@
 package com.springbootsauna.springbootsaunarestapi.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.springbootsauna.springbootsaunarestapi.customer.entity.Customer;
+import com.springbootsauna.springbootsaunarestapi.appointment.entity.Appointment;
 import com.springbootsauna.springbootsaunarestapi.util.EGender;
 import com.springbootsauna.springbootsaunarestapi.util.ERole;
 import jakarta.persistence.*;
@@ -12,6 +12,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -24,7 +25,7 @@ public class User {
     @GeneratedValue
     private UUID id;
     @Enumerated(EnumType.STRING)
-    private EGender eGender;
+    private EGender gender;
     @Column(name = "phone_number", nullable = false, unique = true)
     private String phoneNumber;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
@@ -35,14 +36,14 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
     @Enumerated(EnumType.STRING)
-    private ERole eRole;
+    private ERole role;
     @Column(name = "national_id")
     private String nationalId;
+//    @OneToMany(mappedBy = "user")
+//    private List<Appointment> appointments;
     @CreationTimestamp
     private Date createdAt;
     @UpdateTimestamp
     private Date updateAt;
-//    @OneToOne(mappedBy = "user")
-//    private Customer customer;
 
 }
