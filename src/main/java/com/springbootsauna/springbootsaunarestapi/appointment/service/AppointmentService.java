@@ -39,36 +39,30 @@ public class AppointmentService implements IAppointmentService{
     }
 
     @Override
-    public ResponseObject processAppointment(ERole role, EAppointmentStatus appointmentStatus) {
+    public ResponseObject processAppointment(UUID user_id, UUID appointment_id, EAppointmentStatus appointmentStatus) {
         try {
+            User user = new User();
+            ERole role = user.getRole();
             Appointment appointment = new Appointment();
             switch (role){
                 case RECEPTIONIST :
-                    if (appointmentStatus != EAppointmentStatus.CUSTOMER_SUBMITTED){
-                        appointment.setEAppointmentStatus(EAppointmentStatus.RECEPTIONIST_APPROVED);
-                    }else {
-                        appointment.setEAppointmentStatus(EAppointmentStatus.RECEPTIONIST_REJECTED);
+                    if (appointment.getEAppointmentStatus() == EAppointmentStatus.CUSTOMER_SUBMITTED){
+                        appointment.setEAppointmentStatus(appointmentStatus);
                     }
                     break;
                 case MASSEUR:
-                    if (appointmentStatus != EAppointmentStatus.RECEPTIONIST_APPROVED){
-                        appointment.setEAppointmentStatus(EAppointmentStatus.MASSEUR_APPROVED);
-                    }else {
-                        appointment.setEAppointmentStatus(EAppointmentStatus.MASSEUR_REJECTED);
+                    if (appointment.getEAppointmentStatus() == EAppointmentStatus.RECEPTIONIST_APPROVED){
+                        appointment.setEAppointmentStatus(appointmentStatus);
                     }
                     break;
                 case MANAGER:
-                    if (appointmentStatus != EAppointmentStatus.MASSEUR_APPROVED){
-                        appointment.setEAppointmentStatus(EAppointmentStatus.MANAGER_APPROVED);
-                    }else {
-                        appointment.setEAppointmentStatus(EAppointmentStatus.MANAGER_REJECTED);
+                    if (appointment.getEAppointmentStatus() == EAppointmentStatus.MASSEUR_APPROVED){
+                        appointment.setEAppointmentStatus(appointmentStatus);
                     }
                     break;
                 default:
                     throw new RuntimeException("role is not supported");
             }
-            AppointmentDto appointmentDto = new AppointmentDto();
-            BeanUtils.copyProperties(appointmentDto, appointment);
             return new ResponseObject(iAppointmentRepository.save(appointment));
 
         }catch (Exception exception){

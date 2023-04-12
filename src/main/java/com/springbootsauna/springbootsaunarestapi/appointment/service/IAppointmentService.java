@@ -13,7 +13,7 @@ import java.util.UUID;
 public interface IAppointmentService {
         ResponseObject createAppointment(AppointmentDto appointmentDto);
 
-        ResponseObject processAppointment(ERole role, EAppointmentStatus appointmentStatus);
+        ResponseObject processAppointment(UUID user_id, UUID appointment_id, EAppointmentStatus appointmentStatus);
 
         ResponseObject getAppointment(UUID id);
         Page<Appointment> findAllAppointment(Integer pageNumber, Integer pageSize);

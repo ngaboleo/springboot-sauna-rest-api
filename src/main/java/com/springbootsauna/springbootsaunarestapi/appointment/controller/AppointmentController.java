@@ -9,6 +9,8 @@ import com.springbootsauna.springbootsaunarestapi.util.ResponseObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("api/appointment")
 public class AppointmentController {
@@ -24,10 +26,10 @@ public class AppointmentController {
         }
     }
     @PostMapping("process")
-    public ResponseObject processAppointment(@RequestParam ERole role, @RequestParam EAppointmentStatus appointmentStatus){
+    public ResponseObject processAppointment(@RequestParam UUID user_id, @RequestParam UUID appointment_id, @RequestParam EAppointmentStatus appointmentStatus){
         try {
 //            User user = new User();
-            return new ResponseObject(iAppointmentService.processAppointment(role, appointmentStatus));
+            return new ResponseObject(iAppointmentService.processAppointment(user_id,appointment_id, appointmentStatus));
         }catch (Exception exception){
             return new ResponseObject(exception);
         }
