@@ -41,12 +41,12 @@ public class AppointmentService implements IAppointmentService{
     @Override
     public ResponseObject processAppointment(UUID user_id, UUID appointment_id, EAppointmentStatus appointmentStatus) {
         try {
-            User user = new User();
+            User user = iUserRepository.findById(user_id).get();
             ERole role = user.getRole();
-            Appointment appointment = new Appointment();
+            Appointment appointment = iAppointmentRepository.findById(appointment_id).get();
             switch (role){
                 case RECEPTIONIST :
-                    if (appointment.getEAppointmentStatus() == EAppointmentStatus.CUSTOMER_SUBMITTED){
+                    if (((appointment.getEAppointmentStatus() == EAppointmentStatus.CUSTOMER_SUBMITTED) && ((appointmentStatus == EAppointmentStatus.RECEPTIONIST_APPROVED) || (appointmentStatus == EAppointmentStatus.RECEPTIONIST_REJECTED))) ){
                         appointment.setEAppointmentStatus(appointmentStatus);
                     }
                     break;
