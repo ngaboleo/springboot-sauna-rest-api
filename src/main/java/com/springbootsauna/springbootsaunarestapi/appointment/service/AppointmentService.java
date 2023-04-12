@@ -44,21 +44,21 @@ public class AppointmentService implements IAppointmentService{
             Appointment appointment = new Appointment();
             switch (role){
                 case RECEPTIONIST :
-                    if (appointmentStatus == EAppointmentStatus.CUSTOMER_SUBMITTED){
+                    if (appointmentStatus != EAppointmentStatus.CUSTOMER_SUBMITTED){
                         appointment.setEAppointmentStatus(EAppointmentStatus.RECEPTIONIST_APPROVED);
                     }else {
                         appointment.setEAppointmentStatus(EAppointmentStatus.RECEPTIONIST_REJECTED);
                     }
                     break;
                 case MASSEUR:
-                    if (appointmentStatus == EAppointmentStatus.RECEPTIONIST_APPROVED){
+                    if (appointmentStatus != EAppointmentStatus.RECEPTIONIST_APPROVED){
                         appointment.setEAppointmentStatus(EAppointmentStatus.MASSEUR_APPROVED);
                     }else {
                         appointment.setEAppointmentStatus(EAppointmentStatus.MASSEUR_REJECTED);
                     }
                     break;
                 case MANAGER:
-                    if (appointmentStatus == EAppointmentStatus.MASSEUR_APPROVED){
+                    if (appointmentStatus != EAppointmentStatus.MASSEUR_APPROVED){
                         appointment.setEAppointmentStatus(EAppointmentStatus.MANAGER_APPROVED);
                     }else {
                         appointment.setEAppointmentStatus(EAppointmentStatus.MANAGER_REJECTED);
@@ -67,7 +67,9 @@ public class AppointmentService implements IAppointmentService{
                 default:
                     throw new RuntimeException("role is not supported");
             }
-            return new ResponseObject(appointment);
+            AppointmentDto appointmentDto = new AppointmentDto();
+            BeanUtils.copyProperties(appointmentDto, appointment);
+            return new ResponseObject(iAppointmentRepository.save(appointment));
 
         }catch (Exception exception){
             return new ResponseObject(exception);
