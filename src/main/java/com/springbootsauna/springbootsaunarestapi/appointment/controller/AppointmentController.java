@@ -28,7 +28,7 @@ public class AppointmentController {
     @PostMapping("process")
     public ResponseObject processAppointment(@RequestParam UUID user_id, @RequestParam UUID appointment_id, @RequestParam EAppointmentStatus appointmentStatus){
         try {
-//            User user = new User();
+
             return new ResponseObject(iAppointmentService.processAppointment(user_id,appointment_id, appointmentStatus));
         }catch (Exception exception){
             return new ResponseObject(exception);

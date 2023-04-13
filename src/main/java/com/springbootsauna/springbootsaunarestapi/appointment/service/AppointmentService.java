@@ -46,17 +46,17 @@ public class AppointmentService implements IAppointmentService{
             Appointment appointment = iAppointmentRepository.findById(appointment_id).get();
             switch (role){
                 case RECEPTIONIST :
-                    if (((appointment.getEAppointmentStatus() == EAppointmentStatus.CUSTOMER_SUBMITTED) && ((appointmentStatus == EAppointmentStatus.RECEPTIONIST_APPROVED) || (appointmentStatus == EAppointmentStatus.RECEPTIONIST_REJECTED))) ){
+                    if ((appointment.getEAppointmentStatus() == EAppointmentStatus.CUSTOMER_SUBMITTED || appointment.getEAppointmentStatus() == EAppointmentStatus.RECEPTIONIST_REJECTED) && ((appointmentStatus == EAppointmentStatus.RECEPTIONIST_APPROVED) || (appointmentStatus == EAppointmentStatus.RECEPTIONIST_REJECTED))){
                         appointment.setEAppointmentStatus(appointmentStatus);
                     }
                     break;
                 case MASSEUR:
-                    if (appointment.getEAppointmentStatus() == EAppointmentStatus.RECEPTIONIST_APPROVED){
+                    if (((appointment.getEAppointmentStatus() == EAppointmentStatus.RECEPTIONIST_APPROVED) && ((appointmentStatus == EAppointmentStatus.MASSEUR_APPROVED) || (appointmentStatus == EAppointmentStatus.MASSEUR_REJECTED)))){
                         appointment.setEAppointmentStatus(appointmentStatus);
                     }
                     break;
                 case MANAGER:
-                    if (appointment.getEAppointmentStatus() == EAppointmentStatus.MASSEUR_APPROVED){
+                    if ((appointment.getEAppointmentStatus() == EAppointmentStatus.MASSEUR_APPROVED) && ((appointmentStatus == EAppointmentStatus.MANAGER_APPROVED) || (appointmentStatus == EAppointmentStatus.MANAGER_REJECTED))){
                         appointment.setEAppointmentStatus(appointmentStatus);
                     }
                     break;
