@@ -3,6 +3,8 @@ package com.springbootsauna.springbootsaunarestapi.appointment.service;
 import com.springbootsauna.springbootsaunarestapi.appointment.dto.AppointmentDto;
 import com.springbootsauna.springbootsaunarestapi.appointment.entity.Appointment;
 import com.springbootsauna.springbootsaunarestapi.appointment.entity.IAppointmentRepository;
+import com.springbootsauna.springbootsaunarestapi.appointment.entity.IUserTrackAppointment;
+import com.springbootsauna.springbootsaunarestapi.appointment.entity.UserTrackAppointment;
 import com.springbootsauna.springbootsaunarestapi.user.entity.IUserRepository;
 import com.springbootsauna.springbootsaunarestapi.user.entity.User;
 import com.springbootsauna.springbootsaunarestapi.util.EAppointmentStatus;
@@ -25,14 +27,26 @@ public class AppointmentService implements IAppointmentService{
     private IAppointmentRepository iAppointmentRepository;
     @Autowired
     private IUserRepository iUserRepository;
+    @Autowired
+    private IUserTrackAppointment iUserTrackAppointment;
 
     @Override
     public ResponseObject createAppointment(AppointmentDto appointmentDto) {
         try {
+            UserTrackAppointment userTrackAppointment = new UserTrackAppointment();
+
             Appointment appointment = new Appointment();
             BeanUtils.copyProperties(appointmentDto, appointment);
             appointment.setEAppointmentStatus(EAppointmentStatus.CUSTOMER_SUBMITTED);
-            return new ResponseObject(iAppointmentRepository.save(appointment));
+
+            appointment = iAppointmentRepository.save(appointment);
+
+            userTrackAppointment.setUser_id(appointment.getUser_id());
+            userTrackAppointment.setAppointment_id(appointment.getId());
+            userTrackAppointment.setAppointmentStatus(appointment.getEAppointmentStatus());
+            iUserTrackAppointment.save(userTrackAppointment);
+
+            return new ResponseObject(appointment);
         }catch (Exception exception){
             return new ResponseObject(exception);
         }
@@ -44,6 +58,7 @@ public class AppointmentService implements IAppointmentService{
             User user = iUserRepository.findById(user_id).get();
             ERole role = user.getRole();
             Appointment appointment = iAppointmentRepository.findById(appointment_id).get();
+            UserTrackAppointment userTrackAppointment = new UserTrackAppointment();
             switch (role){
                 case RECEPTIONIST :
                     if ((appointment.getEAppointmentStatus() == EAppointmentStatus.CUSTOMER_SUBMITTED || appointment.getEAppointmentStatus() == EAppointmentStatus.RECEPTIONIST_REJECTED) && ((appointmentStatus == EAppointmentStatus.RECEPTIONIST_APPROVED) || (appointmentStatus == EAppointmentStatus.RECEPTIONIST_REJECTED))){
@@ -63,7 +78,12 @@ public class AppointmentService implements IAppointmentService{
                 default:
                     throw new RuntimeException("role is not supported");
             }
-            return new ResponseObject(iAppointmentRepository.save(appointment));
+            appointment = iAppointmentRepository.save(appointment);
+            userTrackAppointment.setUser_id(user_id);
+            userTrackAppointment.setAppointment_id(appointment_id);
+            userTrackAppointment.setAppointmentStatus(appointmentStatus);
+            iUserTrackAppointment.save(userTrackAppointment);
+            return new ResponseObject(appointment);
 
         }catch (Exception exception){
             return new ResponseObject(exception);
