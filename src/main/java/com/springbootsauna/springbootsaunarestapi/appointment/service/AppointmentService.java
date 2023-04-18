@@ -5,10 +5,12 @@ import com.springbootsauna.springbootsaunarestapi.appointment.entity.Appointment
 import com.springbootsauna.springbootsaunarestapi.appointment.entity.IAppointmentRepository;
 import com.springbootsauna.springbootsaunarestapi.appointment.entity.IUserTrackAppointment;
 import com.springbootsauna.springbootsaunarestapi.appointment.entity.UserTrackAppointment;
+import com.springbootsauna.springbootsaunarestapi.exception.HandleExceptionNotFound;
 import com.springbootsauna.springbootsaunarestapi.user.entity.IUserRepository;
 import com.springbootsauna.springbootsaunarestapi.user.entity.User;
 import com.springbootsauna.springbootsaunarestapi.util.EAppointmentStatus;
 import com.springbootsauna.springbootsaunarestapi.util.ERole;
+import com.springbootsauna.springbootsaunarestapi.util.PageUtil;
 import com.springbootsauna.springbootsaunarestapi.util.ResponseObject;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
@@ -16,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -61,12 +62,15 @@ public class AppointmentService implements IAppointmentService{
             UserTrackAppointment userTrackAppointment = new UserTrackAppointment();
             switch (role){
                 case RECEPTIONIST :
-                    if ((appointment.getEAppointmentStatus() == EAppointmentStatus.CUSTOMER_SUBMITTED || appointment.getEAppointmentStatus() == EAppointmentStatus.RECEPTIONIST_REJECTED) && ((appointmentStatus == EAppointmentStatus.RECEPTIONIST_APPROVED) || (appointmentStatus == EAppointmentStatus.RECEPTIONIST_REJECTED))){
+                    if ((appointment.getEAppointmentStatus() == EAppointmentStatus.CUSTOMER_SUBMITTED) && ((appointmentStatus == EAppointmentStatus.RECEPTIONIST_APPROVED) || (appointmentStatus == EAppointmentStatus.RECEPTIONIST_REJECTED))){
+                        if (!role.equals(ERole.RECEPTIONIST)){
+                            throw new HandleExceptionNotFound("The Role is not appropriate to this appointment");
+                        }
                         appointment.setEAppointmentStatus(appointmentStatus);
                     }
                     break;
                 case MASSEUR:
-                    if (((appointment.getEAppointmentStatus() == EAppointmentStatus.RECEPTIONIST_APPROVED) && ((appointmentStatus == EAppointmentStatus.MASSEUR_APPROVED) || (appointmentStatus == EAppointmentStatus.MASSEUR_REJECTED)))){
+                    if ((appointment.getEAppointmentStatus() == EAppointmentStatus.RECEPTIONIST_APPROVED) && ((appointmentStatus == EAppointmentStatus.MASSEUR_APPROVED) || (appointmentStatus == EAppointmentStatus.MASSEUR_REJECTED))){
                         appointment.setEAppointmentStatus(appointmentStatus);
                     }
                     break;
@@ -76,7 +80,7 @@ public class AppointmentService implements IAppointmentService{
                     }
                     break;
                 default:
-                    throw new RuntimeException("role is not supported");
+                    return new ResponseObject("role is not supported");
             }
             appointment = iAppointmentRepository.save(appointment);
             userTrackAppointment.setUser_id(user_id);
@@ -97,7 +101,17 @@ public class AppointmentService implements IAppointmentService{
     }
 
     @Override
-    public Page<Appointment> findAllAppointment(Integer pageNumber, Integer pageSize) {
+    public ResponseObject findAllAppointment(Integer pageNumber, Integer pageSize) {
+        try {
+            return new ResponseObject(iAppointmentRepository.findAll(PageUtil.getPageable(pageNumber,pageSize)));
+        }catch (Exception exception){
+            return new ResponseObject(exception);
+        }
+
+    }
+
+    @Override
+    public Page<Appointment> findAllAppointment(EAppointmentStatus appointmentStatus) {
         return null;
     }
 }

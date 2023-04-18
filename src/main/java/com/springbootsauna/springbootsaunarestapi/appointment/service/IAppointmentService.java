@@ -16,7 +16,9 @@ public interface IAppointmentService {
         ResponseObject processAppointment(UUID user_id, UUID appointment_id, EAppointmentStatus appointmentStatus);
 
         ResponseObject getAppointment(UUID id);
-        Page<Appointment> findAllAppointment(Integer pageNumber, Integer pageSize);
+        ResponseObject findAllAppointment(Integer pageNumber, Integer pageSize);
+
+        Page<Appointment> findAllAppointment(EAppointmentStatus appointmentStatus);
 
 
 }
